@@ -6,7 +6,7 @@ import java.util.*;
 import java.util.stream.IntStream;
 
 @Data
-public class TrackBuilder {
+class TrackBuilder {
     HashMap<Point, Character> hmPointToChar;
     Track track;
 
@@ -33,7 +33,7 @@ public class TrackBuilder {
     private void placeCarts() {
         hmPointToChar.keySet().forEach(point -> {
             Character character = hmPointToChar.get(point);
-            if(isCart(character)) {
+            if (isCart(character)) {
                 track.addCart(new Cart(getDirectionForCartCharacter(character), new Point(point)));
             }
         });
@@ -49,44 +49,35 @@ public class TrackBuilder {
         return characterDirectionHashMap.get(character);
     }
 
-    static HashMap<Point, Character> buildHashMapOfTrackChars(List<String> lines) {
+    private static HashMap<Point, Character> buildHashMapOfTrackChars(List<String> lines) {
         HashMap<Point, Character> hm = new HashMap<>();
         IntStream.range(0, lines.size()).forEach(i ->
         {
             String line = lines.get(i);
-            IntStream.range(0, line.length()).forEach(j -> hm.put(new Point(j,i), line.charAt(j)));
+            IntStream.range(0, line.length()).forEach(j -> hm.put(new Point(j, i), line.charAt(j)));
         });
         return hm;
     }
 
-    protected static boolean isCurvedPiece(char c) {
+    static boolean isCurvedPiece(char c) {
         return c == '\\' || c == '/';
     }
 
     public Optional<TrackPiece> getTrackPieceForPoint(Point point) throws TrackPieceNotRecognisedException {
         Character character = hmPointToChar.get(point);
         Optional<TrackPiece> returnValue = Optional.empty();
-        if (character.charValue() == '|') {
+        if (character == '|') {
             returnValue = Optional.of(new TrackPiece(Border.TOP, Border.BOTTOM));
-        }
-        else if (character.charValue() == '-') {
+        } else if (character == '-') {
             returnValue = Optional.of(new TrackPiece(Border.LEFT, Border.RIGHT));
-        }
-        else if (character.charValue() == '+') {
+        } else if (character == '+') {
             returnValue = Optional.of(new TrackPiece(Border.values()));
-        }
-        else if (isCurvedPiece(character))
-        {
+        } else if (isCurvedPiece(character)) {
             returnValue = Optional.of(getCurvedTrackPiece(point, character));
-        }
-        else if (isCart(character))
-        {
-            if (isHorizontalCart(character))
-            {
+        } else if (isCart(character)) {
+            if (isHorizontalCart(character)) {
                 returnValue = Optional.of(new TrackPiece(Border.LEFT, Border.RIGHT));
-            }
-            else if (isVerticalCart(character))
-            {
+            } else if (isVerticalCart(character)) {
                 returnValue = Optional.of(new TrackPiece(Border.TOP, Border.BOTTOM));
             }
         }
@@ -112,21 +103,23 @@ public class TrackBuilder {
         Character left = hmPointToChar.getOrDefault(new Point((int) point.getX() - 1, (int) point.getY()), ' ');
 
         if (character == '/') {
-            if (connectsOnEitherSide(right) && connectsAboveOrBelow(down)) {
+            if (connects(right, down)) {
                 return new TrackPiece(Border.RIGHT, Border.BOTTOM);
-            }
-            else if (connectsOnEitherSide(left) && connectsAboveOrBelow(up)) {
+            } else if (connects(left, up)) {
                 return new TrackPiece(Border.TOP, Border.LEFT);
             }
         } else if (character == '\\') {
-            if (connectsOnEitherSide(left) && connectsAboveOrBelow(down)) { //left and down
+            if (connects(left, down)) { //left and down
                 return new TrackPiece(Border.LEFT, Border.BOTTOM);
-            }
-            else if (connectsOnEitherSide(right) && connectsAboveOrBelow(up)) { //up and right
+            } else if (connects(right, up)) { //up and right
                 return new TrackPiece(Border.TOP, Border.RIGHT);
             }
         }
         throw new TrackPieceNotRecognisedException("Character: " + character + " Point: " + point.toString());
+    }
+
+    private boolean connects(Character leftOrRight, Character down) {
+        return connectsOnEitherSide(leftOrRight) && connectsAboveOrBelow(down);
     }
 
     private static boolean connectsAboveOrBelow(Character character) {
@@ -136,8 +129,7 @@ public class TrackBuilder {
                 || character == '^';
     }
 
-    private static boolean connectsOnEitherSide(Character character)
-    {
+    private static boolean connectsOnEitherSide(Character character) {
         Set<Character> sideCharacters = new HashSet<>(Arrays.asList('-', '+', '>', '<'));
         return sideCharacters.contains(character);
     }

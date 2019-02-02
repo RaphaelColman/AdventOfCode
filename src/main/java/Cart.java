@@ -6,7 +6,7 @@ import java.awt.*;
 
 @Data
 @RequiredArgsConstructor
-public class Cart {
+class Cart {
     @NonNull private Direction facing;
     @NonNull private Point location;
 }
