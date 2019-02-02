@@ -8,11 +8,13 @@ import java.awt.*;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.List;
-import java.util.*;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasEntry;
+import static org.hamcrest.Matchers.*;
 import static org.hamcrest.core.Is.is;
 
 @RunWith(JUnitParamsRunner.class)
@@ -79,6 +81,32 @@ public class TrackBuilderTest {
                 //Carts
                 new Object[] {new Point(2,0), new TrackPiece(Border.LEFT, Border.RIGHT)}, // >
                 new Object[] {new Point(9,3), new TrackPiece(Border.TOP, Border.BOTTOM)} // v
+        };
+    }
+
+    @Test
+    @Parameters(method="carts")
+    public void cartsShouldBeInitialisedInTheRightPlace(Cart expectedCart) {
+        Track track = trackBuilder.getTrack();
+        Set<Point> locations = track.getCarts().stream().map(cart -> cart.getLocation()).collect(Collectors.toSet());
+        assertThat(locations, hasItem(expectedCart.getLocation()));
+    }
+
+    @Test
+    @Parameters(method="carts")
+    public void cartsShouldBeFacingTheRightWay(Cart expectedCart) {
+        Track track = trackBuilder.getTrack();
+        Cart cartForLocation = track.getCarts().stream().filter(cart ->
+                cart.getLocation().equals(expectedCart.getLocation())).collect(Collectors.toSet()).iterator().next();
+
+        assertThat(cartForLocation.getFacing(), is(expectedCart.getFacing()));
+    }
+
+    @SuppressWarnings("unused")
+    private Object[] carts() {
+        return new Object[] {
+                new Cart(Direction.RIGHT, new Point(2,0)),
+                new Cart(Direction.DOWN, new Point(9,3))
         };
     }
 

@@ -13,11 +13,12 @@ public class TrackBuilder {
     public TrackBuilder(List<String> lines) {
         hmPointToChar = buildHashMapOfTrackChars(lines);
         buildTrack();
+        placeCarts();
     }
 
     private void buildTrack() {
         HashMap<Point, TrackPiece> hmPointToTrackPiece = new HashMap<>();
-        hmPointToChar.keySet().stream().forEach(point -> {
+        hmPointToChar.keySet().forEach(point -> {
             try {
                 getTrackPieceForPoint(point).ifPresent(trackPiece ->
                         hmPointToTrackPiece.put(new Point(point), trackPiece));
@@ -27,6 +28,25 @@ public class TrackBuilder {
         });
 
         track = new Track(hmPointToTrackPiece);
+    }
+
+    private void placeCarts() {
+        hmPointToChar.keySet().forEach(point -> {
+            Character character = hmPointToChar.get(point);
+            if(isCart(character)) {
+                track.addCart(new Cart(getDirectionForCartCharacter(character), new Point(point)));
+            }
+        });
+    }
+
+    private static Direction getDirectionForCartCharacter(Character character) {
+        HashMap<Character, Direction> characterDirectionHashMap = new HashMap<>();
+        characterDirectionHashMap.put('>', Direction.RIGHT);
+        characterDirectionHashMap.put('<', Direction.LEFT);
+        characterDirectionHashMap.put('^', Direction.UP);
+        characterDirectionHashMap.put('v', Direction.DOWN);
+
+        return characterDirectionHashMap.get(character);
     }
 
     static HashMap<Point, Character> buildHashMapOfTrackChars(List<String> lines) {
