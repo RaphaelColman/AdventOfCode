@@ -22,20 +22,18 @@ import static org.hamcrest.core.Is.is;
 @RunWith(JUnitParamsRunner.class)
 public class CartBuilderTest {
 
-    TrackBuilder trackBuilder;
     CartTracker cartTracker;
 
     @Before
     public void setUp() throws IOException {
         List<String> lines = Files.readAllLines(Paths.get(InputFiles.TEST_TRACK.getPath()));
-        trackBuilder = new TrackBuilder(lines, new CartTracker());
+        TrackBuilder trackBuilder = new TrackBuilder(lines, new CartTracker());
         cartTracker = trackBuilder.getCartTracker();
     }
 
     @Test
     @Parameters(method = "carts")
     public void cartsShouldBeInitialisedInTheRightPlace(Cart expectedCart) {
-        Track track = trackBuilder.getTrack();
         Set<Point> locations = cartTracker.getCarts().stream().map(Cart::getLocation).collect(Collectors.toSet());
         assertThat(locations, hasItem(expectedCart.getLocation()));
     }
@@ -43,7 +41,6 @@ public class CartBuilderTest {
     @Test
     @Parameters(method = "carts")
     public void cartsShouldBeFacingTheRightWay(Cart expectedCart) {
-        Track track = trackBuilder.getTrack();
         Cart cartForLocation = cartTracker.getCarts().stream().filter(cart ->
                 cart.getLocation().equals(expectedCart.getLocation())).collect(Collectors.toSet()).iterator().next();
 

@@ -17,7 +17,6 @@ import static org.junit.Assert.assertThat;
 public class CartTest {
 
     Track track;
-    CartTracker cartTracker;
 
     @Before
     public void setUp() throws IOException {
@@ -25,7 +24,6 @@ public class CartTest {
         List<String> lines = Files.readAllLines(Paths.get("src/test/ext/13.txt"));
         TrackBuilder trackBuilder = new TrackBuilder(lines, new CartTracker());
         track = trackBuilder.getTrack();
-        cartTracker = new CartTracker();
     }
 
     @Test
@@ -43,7 +41,38 @@ public class CartTest {
                 new Object[] {new Point(1,0), new Point(2,0), Direction.RIGHT}, //Moves right
                 new Object[] {new Point(0,1), new Point(0,2), Direction.DOWN}, //Moves down
                 new Object[] {new Point(2,0), new Point(1,0), Direction.LEFT}, //Moves left
-                new Object[] {new Point(4,3), new Point(4,2), Direction.UP}, //Moves up
+                new Object[] {new Point(4,3), new Point(4,2), Direction.UP} //Moves up
+        };
+    }
+
+    @Test
+    @Parameters(method = "curvedMovements")
+    public void cart_turns_when_on_curved_piece(Point start, Point finish, Direction wasfacing, Direction nowFacing) {
+        Cart cart = new Cart(wasfacing, start, track);
+        cart.move();
+
+        assertThat(cart.getLocation(), is(finish));
+        assertThat(cart.getFacing(), is(nowFacing));
+    }
+
+    @SuppressWarnings("unused")
+    private Object[] curvedMovements() {
+        return new Object[] {
+                //  /-
+                //  |
+                new Object[] {new Point(0,0), new Point(1,0), Direction.UP, Direction.RIGHT},
+                new Object[] {new Point(0,0), new Point(0,1), Direction.LEFT, Direction.DOWN},
+
+                //   |
+                //  -/
+                new Object[] {new Point(4,4), new Point(3,4), Direction.DOWN, Direction.LEFT},
+                new Object[] {new Point(4,4), new Point(4,3), Direction.RIGHT, Direction.UP},
+
+                //  |
+                //  \-
+                new Object[] {new Point(0,4), new Point(0,3), Direction.LEFT, Direction.UP},
+                new Object[] {new Point(0,4), new Point(1,4), Direction.DOWN, Direction.RIGHT},
+
         };
     }
 }

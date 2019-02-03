@@ -70,18 +70,18 @@ class TrackBuilder {
         Character character = hmPointToChar.get(point);
         Optional<TrackPiece> returnValue = Optional.empty();
         if (character == '|') {
-            returnValue = Optional.of(new TrackPiece(Border.TOP, Border.BOTTOM));
+            returnValue = Optional.of(new TrackPiece(Direction.UP, Direction.DOWN));
         } else if (character == '-') {
-            returnValue = Optional.of(new TrackPiece(Border.LEFT, Border.RIGHT));
+            returnValue = Optional.of(new TrackPiece(Direction.LEFT, Direction.RIGHT));
         } else if (character == '+') {
-            returnValue = Optional.of(new TrackPiece(Border.values()));
+            returnValue = Optional.of(new TrackPiece(Direction.values()));
         } else if (isCurvedPiece(character)) {
             returnValue = Optional.of(getCurvedTrackPiece(point, character));
         } else if (isCart(character)) {
             if (isHorizontalCart(character)) {
-                returnValue = Optional.of(new TrackPiece(Border.LEFT, Border.RIGHT));
+                returnValue = Optional.of(new TrackPiece(Direction.LEFT, Direction.RIGHT));
             } else if (isVerticalCart(character)) {
-                returnValue = Optional.of(new TrackPiece(Border.TOP, Border.BOTTOM));
+                returnValue = Optional.of(new TrackPiece(Direction.UP, Direction.DOWN));
             }
         }
         return returnValue;
@@ -108,15 +108,15 @@ class TrackBuilder {
 
         if (character == '/') {
             if (connects(right, down)) {
-                return new TrackPiece(Border.RIGHT, Border.BOTTOM);
+                return new TrackPiece(Direction.RIGHT, Direction.DOWN);
             } else if (connects(left, up)) {
-                return new TrackPiece(Border.TOP, Border.LEFT);
+                return new TrackPiece(Direction.UP, Direction.LEFT);
             }
         } else if (character == '\\') {
             if (connects(left, down)) { //left and down
-                return new TrackPiece(Border.LEFT, Border.BOTTOM);
+                return new TrackPiece(Direction.LEFT, Direction.DOWN);
             } else if (connects(right, up)) { //up and right
-                return new TrackPiece(Border.TOP, Border.RIGHT);
+                return new TrackPiece(Direction.UP, Direction.RIGHT);
             }
         }
         throw new TrackPieceNotRecognisedException("Character: " + character + " Point: " + point.toString());
