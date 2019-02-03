@@ -19,13 +19,13 @@ class Cart {
 
     void move() {
         try {
-            moveInTheDirectionCartIsFacing();
+            moveCart();
         } catch (MoreExitsThanExpectedException e) {
             e.printStackTrace();
         }
     }
 
-    private void moveInTheDirectionCartIsFacing() throws MoreExitsThanExpectedException {
+    private void moveCart() throws MoreExitsThanExpectedException {
         TrackPiece currentTrackPiece = track.getTrackPieceForLocation(location);
         if (currentTrackPiece.isJunction()) {
             if (historicalTurns.isEmpty()) {
@@ -40,7 +40,7 @@ class Cart {
             location = mapDirectionToMovement(facing, location);
         } else if (currentTrackPiece.isCurved()) {
             HashSet<Direction> perpendiculars = Direction.getPerpendiculars(facing);
-            Set<Direction> exits = currentTrackPiece.getExits();
+            Set<Direction> exits = new HashSet(currentTrackPiece.getExits());
 
             exits.retainAll(perpendiculars);
             if (exits.size() != 1)

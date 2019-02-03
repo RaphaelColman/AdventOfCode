@@ -1,3 +1,4 @@
+import java.awt.*;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -14,18 +15,9 @@ class App {
             e.printStackTrace();
         }
         TrackBuilder trackBuilder = new TrackBuilder(lines, new CartTracker());
-        Track track = trackBuilder.getTrack();
         CartTracker cartTracker = trackBuilder.getCartTracker();
 
-        int index = 0;
-        while (cartTracker.getCollisions().size() == 0) {
-            cartTracker.moveCarts();
-            index++;
-
-            if (index > 1000) {
-                return;
-            }
-        }
-        System.out.println("Carts collided at: " + cartTracker.getCollisions());
+        Point finalCartLocation = cartTracker.getFinalCartLocation();
+        System.out.println("Final cart: " + finalCartLocation);
     }
 }

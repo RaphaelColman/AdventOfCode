@@ -14,7 +14,6 @@ import java.util.Set;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasEntry;
-import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.core.Is.is;
 
 @RunWith(JUnitParamsRunner.class)

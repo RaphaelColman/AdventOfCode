@@ -31,7 +31,7 @@ public class CartTest {
 
     @Test
     @Parameters(method = "straightMovements")
-    public void cart_moves_right_when_on_straight_track(Point start, Point finish, Direction facing) {
+    public void cartMovesStraightOnStraightTrack(Point start, Point finish, Direction facing) {
         Cart cart = new Cart(facing, start, track);
         cart.move();
 
@@ -50,7 +50,7 @@ public class CartTest {
 
     @Test
     @Parameters(method = "curvedMovements")
-    public void cart_turns_when_on_curved_piece(Point start, Point finish, Direction wasfacing, Direction nowFacing) {
+    public void cartTurnsOnCurvedTrack(Point start, Point finish, Direction wasfacing, Direction nowFacing) {
         Cart cart = new Cart(wasfacing, start, track);
         cart.move();
 
@@ -80,7 +80,7 @@ public class CartTest {
     }
 
     @Test
-    public void cart_turns_correctly_on_junctions() {
+    public void cartTurnsCorrectlyOnJunctions() {
 
         TrackPiece junctionTrackPiece = new TrackPiece(Direction.values());
 
