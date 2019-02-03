@@ -9,11 +9,10 @@ import java.util.Set;
 
 @Data
 @RequiredArgsConstructor
-public class Track {
+class Track {
     @NonNull HashMap<Point, TrackPiece> hmPointToTrackPiece;
-    Set<Cart> carts = new HashSet<>();
 
-    public void addCart(Cart cart) {
-        carts.add(cart);
+    public TrackPiece getTrackPieceForLocation(Point point) {
+        return hmPointToTrackPiece.get(point);
     }
 }

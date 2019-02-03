@@ -3,6 +3,7 @@ import junitparams.Parameters;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 
 import java.awt.*;
 import java.io.IOException;
@@ -14,19 +15,20 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.hasEntry;
+import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.core.Is.is;
 
 @RunWith(JUnitParamsRunner.class)
 public class TrackBuilderTest {
 
-    private static final String TEXT_TRACK_FILE_PATH = "src/test/ext/13.txt";
     private TrackBuilder trackBuilder;
 
     @Before
     public void setUp() throws IOException {
-        List<String> lines = Files.readAllLines(Paths.get(TEXT_TRACK_FILE_PATH));
-        trackBuilder = new TrackBuilder(lines);
+
+        List<String> lines = Files.readAllLines(Paths.get(InputFiles.TEST_TRACK.getPath()));
+        trackBuilder = new TrackBuilder(lines, new CartTracker());
     }
 
     @Test
@@ -83,31 +85,4 @@ public class TrackBuilderTest {
                 new Object[]{new Point(9, 3), new TrackPiece(Border.TOP, Border.BOTTOM)} // v
         };
     }
-
-    @Test
-    @Parameters(method = "carts")
-    public void cartsShouldBeInitialisedInTheRightPlace(Cart expectedCart) {
-        Track track = trackBuilder.getTrack();
-        Set<Point> locations = track.getCarts().stream().map(Cart::getLocation).collect(Collectors.toSet());
-        assertThat(locations, hasItem(expectedCart.getLocation()));
-    }
-
-    @Test
-    @Parameters(method = "carts")
-    public void cartsShouldBeFacingTheRightWay(Cart expectedCart) {
-        Track track = trackBuilder.getTrack();
-        Cart cartForLocation = track.getCarts().stream().filter(cart ->
-                cart.getLocation().equals(expectedCart.getLocation())).collect(Collectors.toSet()).iterator().next();
-
-        assertThat(cartForLocation.getFacing(), is(expectedCart.getFacing()));
-    }
-
-    @SuppressWarnings("unused")
-    private Object[] carts() {
-        return new Object[]{
-                new Cart(Direction.RIGHT, new Point(2, 0)),
-                new Cart(Direction.DOWN, new Point(9, 3))
-        };
-    }
-
 }

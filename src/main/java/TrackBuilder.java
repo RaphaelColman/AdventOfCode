@@ -9,8 +9,11 @@ import java.util.stream.IntStream;
 class TrackBuilder {
     HashMap<Point, Character> hmPointToChar;
     Track track;
+    CartTracker cartTracker;
 
-    public TrackBuilder(List<String> lines) {
+    TrackBuilder(List<String> lines, CartTracker cartTracker) {
+        this.cartTracker = cartTracker;
+
         hmPointToChar = buildHashMapOfTrackChars(lines);
         buildTrack();
         placeCarts();
@@ -34,7 +37,7 @@ class TrackBuilder {
         hmPointToChar.keySet().forEach(point -> {
             Character character = hmPointToChar.get(point);
             if (isCart(character)) {
-                track.addCart(new Cart(getDirectionForCartCharacter(character), new Point(point)));
+                cartTracker.addCart(new Cart(getDirectionForCartCharacter(character), new Point(point), track));
             }
         });
     }
@@ -63,7 +66,7 @@ class TrackBuilder {
         return c == '\\' || c == '/';
     }
 
-    public Optional<TrackPiece> getTrackPieceForPoint(Point point) throws TrackPieceNotRecognisedException {
+    Optional<TrackPiece> getTrackPieceForPoint(Point point) throws TrackPieceNotRecognisedException {
         Character character = hmPointToChar.get(point);
         Optional<TrackPiece> returnValue = Optional.empty();
         if (character == '|') {
@@ -97,10 +100,11 @@ class TrackBuilder {
     }
 
     private TrackPiece getCurvedTrackPiece(Point point, Character character) throws TrackPieceNotRecognisedException {
-        Character up = hmPointToChar.getOrDefault(new Point((int) point.getX(), (int) point.getY() - 1), ' ');
-        Character right = hmPointToChar.getOrDefault(new Point((int) point.getX() + 1, (int) point.getY()), ' ');
-        Character down = hmPointToChar.getOrDefault(new Point((int) point.getX(), (int) point.getY() + 1), ' ');
-        Character left = hmPointToChar.getOrDefault(new Point((int) point.getX() - 1, (int) point.getY()), ' ');
+
+        Character up = hmPointToChar.getOrDefault(Cart.mapDirectionToMovement(Direction.UP, point), ' ');
+        Character right = hmPointToChar.getOrDefault(Cart.mapDirectionToMovement(Direction.RIGHT, point), ' ');
+        Character down = hmPointToChar.getOrDefault(Cart.mapDirectionToMovement(Direction.DOWN, point), ' ');
+        Character left = hmPointToChar.getOrDefault(Cart.mapDirectionToMovement(Direction.LEFT, point), ' ');
 
         if (character == '/') {
             if (connects(right, down)) {
@@ -134,7 +138,7 @@ class TrackBuilder {
         return sideCharacters.contains(character);
     }
 
-    public Track getTrack() {
+    Track getTrack() {
         return track;
     }
 }
