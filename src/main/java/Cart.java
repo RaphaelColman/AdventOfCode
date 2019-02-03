@@ -3,6 +3,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
@@ -14,6 +15,8 @@ class Cart {
     @NonNull private Point location;
     @NonNull private Track track;
 
+    private ArrayList<RelativeDirections> historicalTurns = new ArrayList<>();
+
     void move() {
         try {
             moveInTheDirectionCartIsFacing();
@@ -24,7 +27,16 @@ class Cart {
 
     private void moveInTheDirectionCartIsFacing() throws MoreExitsThanExpectedException {
         TrackPiece currentTrackPiece = track.getTrackPieceForLocation(location);
-        if (currentTrackPiece.isStraight()) { //If the trackpiece is straight then just go the direction you're facing.
+        if (currentTrackPiece.isJunction()) {
+            if (historicalTurns.isEmpty()) {
+                turnLeft();
+                location = mapDirectionToMovement(facing, location);
+            } else {
+                turnBasedOnHistoricalTurns();
+                location = mapDirectionToMovement(facing, location);
+            }
+
+        } else if (currentTrackPiece.isStraight()) { //If the trackpiece is straight then just go the direction you're facing.
             location = mapDirectionToMovement(facing, location);
         } else if (currentTrackPiece.isCurved()) {
             HashSet<Direction> perpendiculars = Direction.getPerpendiculars(facing);
@@ -40,6 +52,27 @@ class Cart {
             location = mapDirectionToMovement(facing, location);
         }
 
+    }
+
+    private void turnBasedOnHistoricalTurns() {
+        RelativeDirections previousDirection = historicalTurns.get(historicalTurns.size() - 1);
+        if (previousDirection.equals(RelativeDirections.LEFT)) {
+            historicalTurns.add(RelativeDirections.STRAIGHT);
+        } else if (previousDirection.equals(RelativeDirections.STRAIGHT)) {
+            turnRight();
+        } else if (previousDirection.equals(RelativeDirections.RIGHT)) {
+            turnLeft();
+        }
+    }
+
+    private void turnLeft() {
+        facing = Direction.getLeft(facing);
+        historicalTurns.add(RelativeDirections.LEFT);
+    }
+
+    private void turnRight() {
+        facing = Direction.getRight(facing);
+        historicalTurns.add(RelativeDirections.RIGHT);
     }
 
     static Point mapDirectionToMovement(Direction direction, Point point) {

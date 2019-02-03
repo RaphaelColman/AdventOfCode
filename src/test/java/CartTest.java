@@ -3,6 +3,7 @@ import junitparams.Parameters;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 
 import java.awt.*;
 import java.io.IOException;
@@ -12,6 +13,8 @@ import java.util.List;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.when;
 
 @RunWith(JUnitParamsRunner.class)
 public class CartTest {
@@ -75,4 +78,32 @@ public class CartTest {
 
         };
     }
+
+    @Test
+    public void cart_turns_correctly_on_junctions() {
+
+        TrackPiece junctionTrackPiece = new TrackPiece(Direction.values());
+
+        Track mockTrack = Mockito.mock(Track.class);
+        when(mockTrack.getTrackPieceForLocation(any(Point.class))).thenReturn(junctionTrackPiece);
+
+        Cart cart = new Cart(Direction.UP, new Point(10, 10), mockTrack);
+
+        cart.move();
+        assertThat(cart.getFacing(), is(Direction.LEFT));
+        assertThat(cart.getLocation(), is(new Point(9, 10)));
+
+        cart.move();
+        assertThat(cart.getFacing(), is(Direction.LEFT));
+        assertThat(cart.getLocation(), is(new Point(8, 10)));
+
+        cart.move();
+        assertThat(cart.getFacing(), is(Direction.UP));
+        assertThat(cart.getLocation(), is(new Point(8, 9)));
+
+        cart.move();
+        assertThat(cart.getFacing(), is(Direction.LEFT));
+        assertThat(cart.getLocation(), is(new Point(7, 9)));
+    }
+
 }

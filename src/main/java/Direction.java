@@ -1,6 +1,7 @@
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 
 public enum Direction {
     UP, RIGHT, DOWN, LEFT;
@@ -24,5 +25,31 @@ public enum Direction {
         allDirections.removeAll(directionsToExclude);
 
         return allDirections;
+    }
+
+    public static Direction getLeft(Direction direction) {
+        List<Direction> directions = Arrays.asList(values());
+        int index = directions.indexOf(direction);
+        index--;
+
+        if (index <= -1) {
+            return LEFT;
+        }
+        else {
+            return directions.get(index);
+        }
+    }
+
+    public static Direction getRight(Direction direction) {
+        List<Direction> directions = Arrays.asList(values());
+        int index = directions.indexOf(direction);
+        index++;
+
+        if (index >= directions.size()) {
+            return UP;
+        }
+        else {
+            return directions.get(index);
+        }
     }
 }
